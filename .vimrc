@@ -1,4 +1,383 @@
-syntax on
-set wrapmargin=8
+" Thank you to Taylor Money!
+" https://github.com/youngmoney/dot/blob/master/conf/vimrc
+
 set number
 
+if !filereadable(expand('~/.vim/bundle/vundle/README.md'))
+  !git clone https://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+  !vim +BundleInstall +qall
+  qa
+endif
+set nocompatible
+filetype off
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+Bundle 'gmarik/vundle'
+
+
+"Navigation
+Bundle 'kien/ctrlp.vim'
+Bundle 'djoshea/vim-autoread'
+Bundle 'tpope/vim-eunuch'
+Bundle 'kshenoy/vim-signature'
+Bundle 'Valloric/ListToggle'
+Bundle 'easymotion/vim-easymotion'
+
+Bundle 'epeli/slimux'
+Bundle 'christoomey/vim-tmux-navigator'
+
+"Completion
+Bundle 'SirVer/ultisnips'
+Bundle 'honza/vim-snippets'
+Bundle 'nvie/vim-flake8'
+"Bundle 'Valloric/YouCompleteMe'
+Bundle 'mhinz/vim-signify'
+
+"Whitespace and Characters
+Bundle 'ntpeters/vim-better-whitespace'
+Bundle 'vim-scripts/yaifa.vim'
+Bundle 'Raimondi/delimitMate'
+Bundle 'tpope/vim-surround'
+Bundle 'tomtom/tcomment_vim'
+
+"Text
+" Bundle 'vim-pandoc/vim-pandoc-syntax'
+Bundle 'dhruvasagar/vim-table-mode'
+
+let pluginrc=$LOCALDOT . '/conf/plugin.vim'
+if filereadable(pluginrc)
+  exe 'source' . pluginrc
+endif
+
+"So Crucial
+filetype on
+filetype plugin indent on
+syntax on
+
+silent !mkdir -p ~/.vim/backup ~/.vim/swap >/dev/null 2>&1
+set wildignore+=*.so,*.swp,*.zip,*.d,*.o,*.class,build/*,*.pdf
+set backupdir=~/.vim/backup//
+set directory=~/.vim/swap//
+set backspace=2
+set tags=.tags;/ 
+let mapleader=","
+set laststatus=2
+set updatetime=5
+let autoreadargs={'autoread':1}
+
+map <leader><leader>r :source ~/.vimrc <Return>
+map <leader><leader>i :source ~/.vimrc <Return> :BundleInstall<Return>:q<Return>
+map <leader><leader>u :source ~/.vimrc <Return> :BundleClean<Return>:BundleInstall!<Return>:q<Return>
+
+autocmd Filetype crontab set backupcopy=yes
+
+"YCM
+let g:ycm_path_to_python_interpreter = '/usr/bin/python'
+let g:clang_exec = '/usr/local/bin/clang'
+let g:clang_library_path = '/usr/local/lib/libclang.dylib'
+let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
+let g:ycm_collect_identifiers_from_tags_files = 1
+let g:ycm_error_symbol = '!'
+let g:ycm_warning_symbol = '?'
+let g:ycm_filepath_completion_use_working_dir = 1
+let g:ycm_always_populate_location_list = 1
+
+"UltiSnips
+let g:UltiSnipsExpandTrigger="<c-j>"
+let g:UltiSnipsJumpForwardTrigger = g:UltiSnipsExpandTrigger
+let g:UltiSnipsJumpBackwardTrigger = "<c-n>"
+let g:ulti_expand_or_jump_res = 0
+
+"CtrlP
+let g:ctrlp_extensions = ['tag']
+let g:ctrlp_open_new_file = 'r'
+let g:ctrlp_custom_ignore = 'documents/notes/.*\.html'
+
+"Slime
+let g:slimux_select_from_current_window = 1
+map <Leader>. :SlimuxREPLSendLine<CR>
+map <Leader>> :SlimuxREPLSendBuffer<CR>
+vmap <Leader>. :SlimuxREPLSendSelection<CR>
+
+"Table
+let g:table_mode_corner_corner='+'
+let g:table_mode_corner='+'
+
+"Colors
+set statusline=%<\ %f\ %m%r%y%=%-20.(%l/%L-%c%V\ (%P)%)
+set vb "t_vb
+colo slate
+set cursorline
+set hlsearch
+autocmd Filetype text set ft=markdown
+autocmd BufNewFile,BufreadPost *.md set ft=markdown
+autocmd Filetype markdown set cursorline!
+autocmd WinEnter * setlocal cursorline
+autocmd WinLeave * setlocal nocursorline
+set fillchars+=vert:\ 
+
+"Tabs
+set expandtab
+set shiftwidth=4
+set smartindent
+set smarttab
+
+"Diff
+let g:signify_sign_show_count = 0
+let g:signify_sign_change = '*'
+hi diffAdded ctermfg=green
+hi diffAdd ctermbg=none ctermfg=green
+hi diffRemoved ctermfg=red
+hi diffDelete ctermbg=none ctermfg=red
+hi diffChanged ctermfg=yellow
+hi diffChange ctermbg=none ctermfg=yellow
+hi link diffFile String
+hi link DiffNewFile String
+hi link diffIndexLine String
+map ,w :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name")
+  \ . '> trans<' . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+  \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
+"Markdown
+let g:markdown_fenced_languages = ['html', 'python', 'bash=sh', 'sh', 'sql']
+autocmd Filetype markdown set updatetime=50
+autocmd Filetype markdown syntax match mdReminder "<!--+.*-->"
+autocmd Filetype markdown highlight link mdReminder Todo
+autocmd Filetype markdown syntax match mdNoteParagraph "NOTE"
+autocmd Filetype markdown syntax region mdNoteParagraph start=/\C^NOTE:/ end='^$'
+autocmd Filetype markdown syntax region mdNoteParagraph start=/\C^TIP:/ end='^$'
+autocmd Filetype markdown highlight link mdNoteParagraph Comment
+autocmd Filetype markdown syntax match mdTodo "<!---.*-->"
+autocmd Filetype markdown highlight link mdTodo Todo
+autocmd Filetype markdown syntax match mdTodoParagraph "TODO"
+autocmd Filetype markdown syntax match mdTodoParagraph "\s\^\s"
+autocmd Filetype markdown syntax match mdTodoParagraph "ACTIONITEM"
+autocmd Filetype markdown syntax region mdTodoParagraph start=/\C^TODO:/ end='^$'
+autocmd Filetype markdown highlight link mdTodoParagraph Todo
+autocmd Filetype markdown syntax match mdAlert "@today"
+autocmd Filetype markdown syntax match mdAlert "<!--.*!.*-->"
+autocmd Filetype markdown highlight link mdAlert Error
+autocmd Filetype markdown syntax region mdWarningParagraph start=/\C^WARNING:/ end='^$'
+autocmd Filetype markdown highlight link mdWarningParagraph Error
+autocmd Filetype markdown syntax match mdMath "\$\_.\{-}\$"
+autocmd Filetype markdown highlight link mdMath Structure
+" autocmd Filetype markdown set textwidth=80
+autocmd Filetype markdown syntax match mdBudget "^\(in\|tx\|bg\|ex\) .*$"
+autocmd Filetype markdown highlight link mdBudget Ignore
+highlight nonascii guibg=Red ctermbg=1 term=standout
+au BufReadPost * syntax match nonascii "[^\u0000-\u007F]"
+
+"Shortcuts
+inoremap kj <Esc>
+noremap kj <Esc>
+autocmd InsertLeave * set nopaste
+map <leader>p :set paste<Return>i
+map <leader>n :set nu!<Return>
+map <leader>s :set spell!<Return>
+map <leader>z ]s
+map <leader>zz 1z=
+map <Bslash> :noh<Return>
+map <leader>h :e %:p:s,.h$,.X123X,:s,.c$,.h,:s,.X123X$,.c,<CR>
+map <leader>hh :e %:p:s,.h$,.X123X,:s,.cc$,.h,:s,.X123X$,.cc,<CR>
+
+
+map <leader>gb :execute "!git blame -L".line('.').",+3 ".expand("%")<return>
+
+" map <leader>b :make<Return>:call ShowErrors()<Return>
+"map <leader>r :make run -s<Return>:call ShowErrors()<Return>
+" map <leader>c :make check -s<Return>:call ShowErrors()<Return>
+
+
+map <C-t> :lex system('build list --list ' . expand("%") . ' table')<return>:lopen<return>
+map ,t :lex system('build list --list *.md:**/*.md table')<return>:lopen<return>
+autocmd FileType qf nmap <buffer> <cr> <cr>:lcl<cr>
+
+map <leader>k :cprevious<Return>
+map <leader>j :cnext<Return>
+map <leader>C :cclose<Return>
+map ]k :lprevious<Return>
+map ]j :lnext<Return>
+map ,f :YcmCompleter FixIt<Return>
+
+nmap gs <Plug>(easymotion-overwin-f)
+nmap gj <Plug>(easymotion-j)
+nmap gk <Plug>(easymotion-k)
+
+function! NewNote()
+    call inputsave()
+    let name = input('note name: ')
+    call inputrestore()
+    exec ':e ' . strftime("%y.%m.%d") . '_' . name . '.md'
+endfunction
+
+autocmd FileType markdown map <leader>nn :call NewNote()<return>
+
+function! RunNotebook(mode) range
+    write
+    if a:mode == 0
+        cexpr system("build notebook execute " . bufname("%"))
+    endif
+    if a:mode == 1
+        cexpr system("build notebook execute --line " . a:firstline . "-" . a:lastline . " ".  bufname("%"))
+    endif
+    if a:mode == 2
+        cexpr system("build notebook execute --line " . line('.') . "- ".  bufname("%"))
+    endif
+    silent !tput bel
+    redraw!
+    redraw!
+    echo "Done"
+endfunction
+
+function! RunMarkdown(mode)
+    if a:mode == 0
+        cexpr system("build markdown " . bufname("%"))
+    endif
+    if a:mode == 1
+        cexpr system("build markdown -o " . bufname("%"))
+    endif
+endfunction
+
+function! SessionStop()
+    cexpr system("build session client stop " . expand('%:p'))
+endfunction
+function! SessionKill()
+    cexpr system("build session client kill " . expand('%:p'))
+endfunction
+command! SessionStop call SessionStop()
+command! SessionKill call SessionKill()
+
+function! InsertCell()
+    let l=line('.')
+    normal! ]O
+    if l >= line('.')
+        normal G
+    endif
+    :noh
+    call append(line('.'), '```')
+    call append(line('.'), '```')
+    normal o
+    normal jo
+    startinsert
+endfunction
+
+autocmd BufRead,BufNewFile .cron set ft=crontab
+autocmd Filetype java set errorformat+=%A%f:%l:\ %m,%-Z%p^,%-C%.%#
+autocmd Filetype java set makeprg=javac\ %
+autocmd Filetype python map <leader>b :w<Return>:!python %<Return>
+autocmd Filetype python map <leader>r :w<Return>:!python %<Return>
+autocmd FileType python map <leader>f :w<Return>:call Flake8()<CR>
+autocmd Filetype ruby map <leader>b :w<Return>:!ruby %<Return>
+autocmd Filetype ruby map <leader>r :w<Return>:!ruby %<Return>
+autocmd Filetype markdown map <leader>r :call RunMarkdown(1)<CR>
+autocmd Filetype markdown map <leader>b :call RunMarkdown(0)<CR>
+autocmd Filetype markdown map <leader>E :call RunNotebook(0)<CR>
+autocmd Filetype markdown map <leader>e :call RunNotebook(1)<CR>
+autocmd Filetype markdown map <leader>ee :call RunNotebook(2)<CR>
+autocmd Filetype markdown map <leader>ne :call InsertCell()<CR>
+autocmd Filetype markdown map ]e /\(\_^\n\_^```\)<return>:noh<return>jj
+autocmd Filetype markdown map [e ?\(\_^\n\_^```\)<return>n:noh<return>jj
+autocmd Filetype markdown map [E ?\(\_^\n\_^```\)<return>:noh<return>jj
+autocmd Filetype markdown map ]o /\(<!-- notebook output start\)<return>:noh<return>jj
+autocmd Filetype markdown map [o ?\(<!-- notebook output start\)<return>n:noh<return>jj
+autocmd Filetype markdown map [O ?\(<!-- notebook output end\)<return>:noh<return>
+
+"Building
+function! ShowErrors()
+  :cclose
+  if len(getqflist()) > 0
+    :copen
+  endif
+endfunction
+
+"Fullscreen
+function! Zoom()
+    if (tabpagenr() == 1)
+        :tab split
+    else
+        :tabc
+    endif
+endfunction
+nmap <C-w>z :call Zoom()<return>
+
+"QuickSearch
+function! QuickSearchFunc(args)
+    return 'grep -rn ' . a:args . ' .'
+endfunction
+function! QuickSearch(args)
+    cexpr system(QuickSearchFunc(a:args)) | copen
+endfunction
+command! -nargs=1 QuickSearch call QuickSearch("<args>")
+nmap ;; :tab new<return>:QuickSearch 
+nmap <leader>; :QuickSearch 
+
+"Highlight Long Lines
+" let g:highlight_long_lines=1
+" function! HighlightTooLongLines()
+"   highlight def link RightMargin Error
+"   if &textwidth != 0
+"     if g:highlight_long_lines != 0
+"       call matchadd('ErrorMsg', '\%>' . &l:textwidth . 'v.\+', -1)
+"     endif
+"   endif
+" endfunction
+" augroup highlight_toolong3
+"   au!
+"   au FileType,BufEnter * call HighlightTooLongLines()
+" augroup END
+
+
+"Load Local Settings
+let localconf=$LOCALDOT . '/conf'
+for fpath in split(globpath(localconf, '*.vim'), '\n')
+  if fpath != pluginrc
+    exe 'source' fpath
+  endif
+endfor
+
+"
+" Prevent various Vim features from keeping the contents of pass(1) password
+" files (or any other purely temporary files) in plaintext on the system.
+"
+" Either append this to the end of your .vimrc, or install it as a plugin with
+" a plugin manager like Tim Pope's Pathogen.
+"
+" Author: Tom Ryder <tom@sanctum.geek.nz>
+"
+
+" Don't backup files in temp directories or shm
+if exists('&backupskip')
+    set backupskip+=/tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*
+endif
+
+" Don't keep swap files in temp directories or shm
+if has('autocmd')
+    augroup swapskip
+        autocmd!
+        silent! autocmd BufNewFile,BufReadPre
+            \ /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*
+            \ setlocal noswapfile
+    augroup END
+endif
+
+" Don't keep undo files in temp directories or shm
+if has('persistent_undo') && has('autocmd')
+    augroup undoskip
+        autocmd!
+        silent! autocmd BufWritePre
+            \ /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*
+            \ setlocal noundofile
+    augroup END
+endif
+
+" Don't keep viminfo for files in temp directories or shm
+if has('viminfo')
+    if has('autocmd')
+        augroup viminfoskip
+            autocmd!
+            silent! autocmd BufNewFile,BufReadPre
+                \ /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/*
+                \ setlocal viminfo=
+        augroup END
+    endif
+endif
