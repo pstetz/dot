@@ -1,21 +1,39 @@
-
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
 export PATH="$(brew --prefix qt@5.5)/bin:$PATH"
 
-alias pystart='/anaconda3/bin/jupyter_mac.command'
+# Silence zsh warning
+export BASH_SILENCE_DEPRECATION_WARNING=1
+
+alias pystart='/Users/pbezuhov/anaconda3/bin/jupyter_mac.command'
 alias matlab='/Applications/MATLAB_R2014b.app/bin/matlab -nodesktop'
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # alias python='python2'
-alias goserver2='ssh pstetz@sni-vcs-williams2.stanford.edu'
 alias goattention='ssh pstetz@attention.stanford.edu'
 alias goreward='ssh pstetz@reward.stanford.edu'
-alias goserver1='ssh pstetz@sni-vcs-williams.stanford.edu'
-alias cdme='cd /Volumes/group/ForPatrick'
+alias cdme='cd /Volumes/group/pstetz'
+alias cddata='cd /Volumes/group/PANLab_Datasets'
 alias sourcebashrc='source ~/.bashrc'
 alias vimbashrc='vim ~/.bashrc'
 
 ## Environment variables
 export FLYWHEEL_API=$(cat ~/.passwords/flywheel)
+
+# Warns when overwriting file
+set -o noclobber
+
+# custom function
+function cd {
+    builtin cd "$@" && ls
+}
+last_mod(){
+    find . -maxdepth 1 -mmin $1
+}
+now(){
+    current_time=$(date +%Y_%m_%d_%H_%M_%S)
+    echo $current_time
+}
+pretty-log() { # Nicer format for git log
+   git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit $@
+}
 
 ### Command prompt
 orange=$(tput setaf 166);
@@ -33,4 +51,6 @@ PS1+="\[${green}\]\w"
 PS1+="\n";
 PS1+="\[${white}\]\$ \[${reset}\]";
 export PS1;
+
+export TZ=America/Los_Angeles
 
